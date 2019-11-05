@@ -33,7 +33,7 @@ namespace NG_Core_Auth.Controllers
             _appSettings = appSettings.Value;
         }
 
-        [HttpPost("action")]
+        [HttpPost("[action]")]
         public async  Task<IActionResult> Register([FromBody] RegisterVM formdata)
         {
             //Will hold all th errors related to registration
@@ -70,7 +70,7 @@ namespace NG_Core_Auth.Controllers
         }
 
         //Login
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> Login([FromBody] LoginVM formdata)
         {
             //get the user from the database
