@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NG_Core_Auth.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,6 +23,45 @@ namespace NG_Core_Auth.Controllers
             _userManager = userManager;
             _signManager = signManager;
         }
+
+        public async  Task<IActionResult> Register([FromBody] RegisterVM formdata)
+        {
+            //Will hold all th errors related to registration
+            List<string> errorsList = new List<string>();
+
+            var user = new IdentityUser
+            {
+                Email = formdata.Email,
+                UserName = formdata.Username,
+                SecurityStamp = Guid.NewGuid().ToString(),
+            };
+
+            var result = await _userManager.CreateAsync(user, formdata.Password);
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Customer");
+
+                //Sending Confirmation email TODO
+
+                return Ok(new { username = user.UserName, email = user.Email, status = 1, message = "Registration Succesful"});
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("",error.Description);
+                    errorsList.Add(error.Description);
+                }
+            }
+
+            return BadRequest(new JsonResult(errorsList));
+
+        }
+
+        //Login
+
+
 
         //public int MyProperty { get; set; }
         //// GET: api/<controller>
